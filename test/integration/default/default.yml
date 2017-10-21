@@ -1,0 +1,6 @@
+---
+- name: OS Hardening play
+  hosts: test-kitchen
+
+  roles:
+    - ansible-os-hardening

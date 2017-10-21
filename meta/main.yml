@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: "Ogonna Iwunze"
+  company: none
+  license: MIT
+  min_ansible_version: 2.2
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+  categories:
+    - cis
+    - os-hardening
+dependencies: []
