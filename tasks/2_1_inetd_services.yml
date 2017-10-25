@@ -1,0 +1,10 @@
+---
+
+# ensure inetd is not installed
+# ensure xinetd is not installed
+
+- name: Uninstall inetd and xinetd
+  apt:
+    name:  "{{ item }}"
+    state: absent
+  with_items: [ inetd, xinetd ]

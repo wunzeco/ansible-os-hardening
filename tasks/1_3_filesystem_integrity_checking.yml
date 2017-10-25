@@ -1,0 +1,14 @@
+---
+
+- name: Install aide
+  apt:
+    name: aide
+    state: present
+
+- name: Create cron job for regular aide check
+  cron:
+    name:       "AIDE Check"
+    user:       root
+    hour:       "5"
+    job:        "/usr/bin/aide --check" 
+    state:      present

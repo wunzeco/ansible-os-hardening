@@ -1,0 +1,6 @@
+# This file lists those modules which we want to be disabled as recommended
+# by CIS benchmark
+
+{% for module in os_hardening_fs_modules_disable %}
+install {{ module }} /bin/true
+{% endfor %}

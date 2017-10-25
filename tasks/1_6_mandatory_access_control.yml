@@ -1,0 +1,14 @@
+---
+# 1.6.1.1 Ensure SELinux is not disabled in bootloader configuration (Scored)
+# 1.6.1.2 Ensure the SELinux state is enforcing (Scored)
+# 1.6.1.3 Ensure SELinux policy is configured (Scored)
+# 1.6.1.4 Ensure no unconfined daemons exist (Scored)
+# 1.6.2.1 Ensure AppArmor is not disabled in bootloader configuration (Scored)
+#
+- name: Install apparmor-utils
+  apt:
+    name: apparmor-utils
+    state: present
+
+- name: Place all apparmor profiles in enforce mode
+  command: aa-enforce /etc/apparmor.d/*

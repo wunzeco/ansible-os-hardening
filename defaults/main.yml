@@ -1,2 +1,11 @@
 ---
 
+os_hardening_fs_modules_disable:
+  - cramfs
+  - freevxfs
+  - jffs2
+  - hfs
+  - hfsplus
+  - squashfs
+  - udf
+  - vfat

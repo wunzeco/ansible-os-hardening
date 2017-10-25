@@ -1,0 +1,42 @@
+---
+
+# 1.5.1 Ensure core dumps are restricted (Scored)
+
+- name: Create custom pam_limits configuration file
+  file:
+    path:  /etc/security/limits.d/CIS.conf
+    owner: root
+    group: root
+    mode:  0644
+    state: touch
+
+- name: Set hard limit on core dumps
+  pam_limits:
+    dest:       /etc/security/limits.d/CIS.conf
+    domain:     "*"
+    limit_type: hard
+    limit_item: core
+    value:      0
+
+- name: Set sysctl fs.suid_dumpable variable to prevent setuid programs from dumping core
+  sysctl:
+    name: fs.suid_dumpable
+    value: 0
+    state: present
+
+# 1.5.2 Ensure XD/NX support is enabled (Not Scored)
+
+# 1.5.3 Ensure address space layout randomization (ASLR) is enabled (Scored)
+
+- name: Set sysctl kernel.randomize_va_space variable to mitigate address space layout randomization
+  sysctl:
+    name: kernel.randomize_va_space
+    value: 2
+    state: present
+
+# 1.5.4 Ensure prelink is disabled (Scored)
+
+- name: Uninstall prelink
+  apt:
+    name:  prelink
+    state: absent

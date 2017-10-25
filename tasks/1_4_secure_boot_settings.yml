@@ -1,0 +1,11 @@
+---
+
+- name: Set permissions on grub config file | 1.4.1
+  file:
+    path:  /boot/grub/grub.cfg
+    owner: root
+    group: root
+    mode:  0600
+
+- debug: msg='1.4.2 Ensure bootloader password is set (Scored)'
+- debug: msg='1.4.3 Ensure authentication required for single user mode (Scored)'

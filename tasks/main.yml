@@ -1,3 +1,12 @@
 ---
 
 - debug: msg="OS Hardening"
+
+- include: 1_1_filesystem_configuration.yml
+- include: 1_2_configure_software_updates.yml
+- include: 1_3_filesystem_integrity_checking.yml
+- include: 1_4_secure_boot_settings.yml   # should be optional I think
+- include: 1_5_additional_process_hardening.yml
+- include: 1_6_mandatory_access_control.yml
+- include: 1_7_warning_banners.yml
+- include: 2_2_special_purpose_services.yml

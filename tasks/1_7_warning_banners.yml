@@ -1,0 +1,33 @@
+---
+
+- name: Configure message of the day (motd) banner
+  copy:
+    src:   motd
+    dest:  /etc/motd
+    owner: root
+    group: root
+    mode:  0644
+
+# 1.7.1.2 Ensure local login warning banner is configured properly (Not Scored)
+
+- name: Configure local login warning banner
+  copy:
+    content: "Authorized uses only. All activity may be monitored and reported."
+    dest: /etc/issue
+    owner: root
+    group: root
+    mode:  0644
+  when: os_hardening_not_scored_enable|default('false')
+
+- name: Configure remote login warning banner
+  copy:
+    content: "Authorized uses only. All activity may be monitored and reported."
+    dest: /etc/issue
+    owner: root
+    group: root
+    mode:  0644
+  when: os_hardening_not_scored_enable|default('false')
+
+# 1.8 Ensure updates, patches, and additional security software are installed (Not Scored)
+# apt-get upgrade - noninteractive, yes, keep current config
+# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu

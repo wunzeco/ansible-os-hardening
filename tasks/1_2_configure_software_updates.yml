@@ -1,0 +1,4 @@
+---
+
+- debug: msg='1.2.1 Ensure package manager repositories are configured (Not Scored)'
+- debug: msg='1.2.2 Ensure GPG keys are configured (Not Scored)'
