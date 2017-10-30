@@ -10,3 +10,6 @@
 - include: 1_6_mandatory_access_control.yml
 - include: 1_7_warning_banners.yml
 - include: 2_2_special_purpose_services.yml
+- include: 2_3_service_clients.yml
+- include: 3_1_network_parameters_host_only.yml
+- include: 3_2_network_parameters_host_and_router.yml

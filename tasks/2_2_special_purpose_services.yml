@@ -4,3 +4,94 @@
   apt:
     name:  ntp
     state: present
+
+# 2.2.2 Ensure X Window System is not installed (Scored)
+- name: Uninstall x window system packages
+  apt:
+    name:  xserver-xorg*
+    state: absent
+
+## 2.2.3 Ensure Avahi Server is not enabled (Scored)
+## 2.2.4 Ensure CUPS is not enabled (Scored)
+## 2.2.5 Ensure DHCP Server is not enabled (Scored)
+## 2.2.6 Ensure LDAP server is not enabled (Scored)
+## 2.2.6 Ensure LDAP server is not enabled (Scored)
+## 2.2.7 Ensure NFS and RPC are not enabled (Scored)
+## 2.2.8 Ensure DNS Server is not enabled (Scored)
+## 2.2.9 Ensure FTP Server is not enabled (Scored)
+## 2.2.10 Ensure HTTP server is not enabled (Scored)
+## 2.2.11 Ensure IMAP and POP3 server is not enabled (Scored)
+## 2.2.12 Ensure Samba is not enabled (Scored)
+## 2.2.13 Ensure HTTP Proxy Server is not enabled (Scored)
+## 2.2.14 Ensure SNMP Server is not enabled (Scored)
+
+- include: disable_upstart_service.yml
+  with_items:
+    - { name: avahi-daemon,     script: /etc/init/avahi-daemon.conf }
+    - { name: cups,             script: /etc/init/cups.conf }
+    - { name: rpcbind,          script: /etc/init/rpcbind.conf }
+    - { name: isc-dhcp-server,  script: /etc/init/isc-dhcp-server.conf }
+    - { name: isc-dhcp-server6, script: /etc/init/isc-dhcp-server6.conf }
+    - { name: vsftpd,           script: /etc/init/vsftpd.conf }
+    - { name: dovecot,          script: /etc/init/dovecot.conf }
+    - { name: smbd,             script: /etc/init/smbd.conf }
+    - { name: squid3,           script: /etc/init/squid3.conf }
+
+- include: disable_sysv_service.yml
+  with_items:
+    - { name: slapd }
+    - { name: nfs-kernel-server }
+    - { name: bind9 }
+    - { name: apache2 }
+    - { name: snmpd }
+
+## 2.2.15 Ensure mail transfer agent is configured for local-only mode (Scored)
+- name: Check if postfix config file exists
+  stat:
+    path: "/etc/postfix/main.cf"
+  register: postfix
+
+- name: Update postfix inet_interfaces property in config file
+  lineinfile:
+    path: "/etc/postfix/main.cf"
+    regexp: '^inet_interfaces ='
+    line: 'inet_interfaces = localhost'
+  register: postfix_conf_update
+  when: postfix.stat.exists
+
+- name: Restart postfix service
+  service: 
+    name: postfix
+    state: restarted
+  when: postfix_conf_update|success
+
+## 2.2.16 Ensure rsync service is not enabled (Scored)
+- name: Check if rsync default config file exists
+  stat:
+    path: "/etc/default/rsync"
+  register: rsync
+
+- name: Disable rsync service
+  lineinfile:
+    path: "/etc/default/rsync"
+    regexp: '^RSYNC_ENABLE='
+    line: 'RSYNC_ENABLE=false'
+  when: rsync.stat.exists
+
+## 2.2.17 Ensure NIS Server is not enabled (Scored)
+- name: Check if NIS server (ypserv) exists
+  stat:
+    path: "/etc/init/ypserv.conf"
+  register: ypserv
+
+- name: Comment out "start" line in /etc/init/ypserv.conf
+  lineinfile:
+    path: "/etc/init/ypserv.conf"
+    regexp: '(^{{ item }})'
+    line: '#\1'
+    backrefs: yes
+  with_items:
+    - 'start on (.*)'
+    - '\s+or(.*)'
+    - '\s+and(.*)'
+  when: ypserv.stat.exists

@@ -1,0 +1,19 @@
+---
+
+## 2.3.1 Ensure NIS Client is not installed (Scored)
+## 2.3.2 Ensure rsh client is not installed (Scored)
+## 2.3.3 Ensure talk client is not installed (Scored)
+## 2.3.4 Ensure telnet client is not installed (Scored)
+## 2.3.5 Ensure LDAP client is not installed (Scored)
+
+- name: Uninstall {{ item }}
+  apt:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - nis
+    - rsh-client
+    - rsh-redone-client
+    - talk
+    - telnet
+    - ldap-utils

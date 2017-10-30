@@ -1,0 +1,14 @@
+---
+
+- set_fact:
+    svc_item: "{{ item }}"
+
+- debug: msg="Ensure {{ svc_item.name }} is not enabled"
+
+- name: Check for {{ svc_item.name }} start script links
+  shell: ls /etc/rc*.d/S*{{ svc_item.name }} || true
+  register: svc
+
+- name: Disable {{ svc_item.name }}
+  shell: update-rc.d {{ svc_item.name }} disable
+  when: not svc.stderr|search('No such file or directory')

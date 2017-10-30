@@ -1,0 +1,78 @@
+---
+
+## 3.2.1 Ensure source routed packets are not accepted (Scored)
+- name: Reject source routed packets
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv4.conf.all.accept_source_route, value: 0 }
+    - { param: net.ipv4.conf.default.accept_source_route, value: 0 }
+
+## 3.2.2 Ensure ICMP redirects are not accepted (Scored)
+- name: Reject ICMP redirects
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv4.conf.all.accept_redirects, value: 0 }
+    - { param: net.ipv4.conf.default.accept_redirects, value: 0 }
+
+## 3.2.3 Ensure secure ICMP redirects are not accepted (Scored)
+- name: Reject secure ICMP redirects
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv4.conf.all.secure_redirects, value: 0 }
+    - { param: net.ipv4.conf.default.secure_redirects, value: 0 }
+
+## 3.2.4 Ensure suspicious packets are logged (Scored)
+- name: Log suspicious packets
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv4.conf.all.log_martians, value: 1 }
+    - { param: net.ipv4.conf.default.log_martians, value: 1 }
+
+## 3.2.5 Ensure broadcast ICMP requests are ignored (Scored)
+- name: Ignore broadcast ICMP requests
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv4.icmp_echo_ignore_broadcasts, value: 1 }
+
+## 3.2.6 Ensure bogus ICMP responses are ignored (Scored)
+- name: Ignore bogus ICMP responses
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv4.icmp_ignore_bogus_error_responses, value: 1 }
+
+## 3.2.7 Ensure Reverse Path Filtering is enabled (Scored)
+- name: Enable reverse path filtering
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv4.conf.all.rp_filter, value: 1 }
+    - { param: net.ipv4.conf.default.rp_filter, value: 1 }
+
+## 3.2.8 Ensure TCP SYN Cookies is enabled (Scored)
+- name: Enable TCP SYN cookies
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv4.tcp_syncookies, value: 1 }

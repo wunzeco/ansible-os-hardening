@@ -7,4 +7,4 @@
   apt:
     name:  "{{ item }}"
     state: absent
-  with_items: [ inetd, xinetd ]
+  with_items: [ openbsd-inetd, xinetd, inetutils-inetd ]
