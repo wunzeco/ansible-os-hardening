@@ -73,9 +73,9 @@
 
 - name: Disable rsync service
   lineinfile:
-    path: "/etc/default/rsync"
+    path:   "/etc/default/rsync"
     regexp: '^RSYNC_ENABLE='
-    line: 'RSYNC_ENABLE=false'
+    line:   'RSYNC_ENABLE=false'
   when: rsync.stat.exists
 
 ## 2.2.17 Ensure NIS Server is not enabled (Scored)
@@ -86,9 +86,9 @@
 
 - name: Comment out "start" line in /etc/init/ypserv.conf
   lineinfile:
-    path: "/etc/init/ypserv.conf"
+    path:   "/etc/init/ypserv.conf"
     regexp: '(^{{ item }})'
-    line: '#\1'
+    line:   '#\1'
     backrefs: yes
   with_items:
     - 'start on (.*)'

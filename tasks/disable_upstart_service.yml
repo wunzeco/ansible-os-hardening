@@ -12,8 +12,8 @@
 
 - name: Comment out "start" line in {{ svc_item.script }}
   lineinfile:
-    path: "{{ svc_item.script }}"
+    path:   "{{ svc_item.script }}"
     regexp: '^start on (.*)'
-    line: '#start on \1'
+    line:   '#start on \1'
     backrefs: yes
   when: svc.stat.exists

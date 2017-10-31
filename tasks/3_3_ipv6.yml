@@ -1,0 +1,28 @@
+---
+
+## 3.3.1 Ensure IPv6 router advertisements are not accepted (Not Scored)
+- name: Reject IPv6 router advertisements
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv6.conf.all.accept_ra, value: 0 }
+    - { param: net.ipv6.conf.default.accept_ra, value: 0 }
+
+## 3.3.2 Ensure IPv6 redirects are not accepted (Not Scored)
+- name: Reject IPv6 redirects
+  sysctl:
+    name:  "{{ item.param }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { param: net.ipv6.conf.all.accept_redirects, value: 0 }
+    - { param: net.ipv6.conf.default.accept_redirects, value: 0 }
+
+## 3.3.3 Ensure IPv6 is disabled (Not Scored)
+- name: Disable IPv6
+  lineinfile:
+    path:   "/etc/default/grub"
+    regexp: "^GRUB_CMDLINE_LINUX="
+    line:   'GRUB_CMDLINE_LINUX="ipv6.disable=1"'
