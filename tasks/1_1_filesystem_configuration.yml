@@ -9,11 +9,11 @@
 
 - name: Disable mounting of unneeded filesystems
   template:
-    src:  modules-disable.conf.j2
-    dest: /etc/modprobe.d/CIS.conf
+    src:   modules-disable.conf.j2
+    dest:  /etc/modprobe.d/CIS.conf
     owner: root
     group: root
-    mode: 0644
+    mode:  0644
   tags: [ filesystem ]
 
 - debug: msg='1.1.2 - 1.1.19 | Not Implemented as they relate to filesystem partitions and mount options'

@@ -1,0 +1,23 @@
+---
+
+## 3.4.1 Ensure TCP Wrappers is installed (Scored)
+- name: Install tcp wrapper
+  apt:
+    name:  tcpd
+    state: present
+
+## 3.4.2 Ensure /etc/hosts.allow is configured (Scored)
+## 3.4.3 Ensure /etc/hosts.deny is configured (Scored)
+## Configuring /etc/hosts.{allow,deny} intentionally skipped as it could be more
+## trouble that it is worth in a cloud environment e.g. AWS
+
+## 3.4.4 Ensure permissions on /etc/hosts.allow are configured (Scored)
+- name: Set permissions on /etc/hosts.{allow,deny}
+  file:
+    path:  "{{ item }}"
+    owner: "root"
+    group: "root"
+    mode:  0644
+  with_items:
+    - /etc/hosts.allow
+    - /etc/hosts.deny

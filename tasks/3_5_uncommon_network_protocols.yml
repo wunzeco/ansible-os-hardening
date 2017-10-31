@@ -1,0 +1,23 @@
+---
+
+## 3.5.1 Ensure DCCP is disabled (Not Scored)
+## 3.5.2 Ensure SCTP is disabled (Not Scored)
+## 3.5.3 Ensure RDS is disabled (Not Scored)
+## 3.5.4 Ensure TIPC is disabled (Not Scored)
+
+- name: Remove uncommon network protocol kernel module
+  modprobe:
+    name:  "{{ item }}"
+    state: absent
+  with_items: "{{ os_hardening_net_modules_disable }}"
+  tags: [ network ]
+
+# REVISIT: This is duplication from 1_1_filesystem_configuration.yml
+- name: Disable uncommon network protocol kernel module
+  template:
+    src:   modules-disable.conf.j2
+    dest:  /etc/modprobe.d/CIS.conf
+    owner: root
+    group: root
+    mode:  0644
+  tags: [ network ]

@@ -9,3 +9,9 @@ os_hardening_fs_modules_disable:
   - squashfs
   - udf
   - vfat
+
+os_hardening_net_modules_disable:
+  - dccp
+  - sctp
+  - rds
+  - tipc

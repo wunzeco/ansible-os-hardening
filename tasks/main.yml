@@ -13,3 +13,5 @@
 - include: 2_3_service_clients.yml
 - include: 3_1_network_parameters_host_only.yml
 - include: 3_2_network_parameters_host_and_router.yml
+- include: 3_3_ipv6.yml
+- include: 3_4_tcp_wrappers.yml
