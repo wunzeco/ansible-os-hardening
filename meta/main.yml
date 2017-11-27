@@ -11,4 +11,6 @@ galaxy_info:
   categories:
     - cis
     - os-hardening
-dependencies: []
+dependencies: 
+  - { role: wunzeco.ntp }
+  - { role: fatal-exception.auditd }
