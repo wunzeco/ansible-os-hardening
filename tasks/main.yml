@@ -15,3 +15,6 @@
 - include: 3_2_network_parameters_host_and_router.yml
 - include: 3_3_ipv6.yml
 - include: 3_4_tcp_wrappers.yml
+- include: 3_5_uncommon_network_protocols.yml
+#- include: 3_6_firewall_configuration.yml
+- include: 4_1_configure_system_accounting.yml

@@ -15,3 +15,7 @@ os_hardening_net_modules_disable:
   - sctp
   - rds
   - tipc
+
+os_hardening_grub_cmdline_linux:
+  - ipv6.disable=1
+  - audit=1

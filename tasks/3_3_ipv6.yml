@@ -21,8 +21,16 @@
     - { param: net.ipv6.conf.default.accept_redirects, value: 0 }
 
 ## 3.3.3 Ensure IPv6 is disabled (Not Scored)
+- name: Check for ipv6.disable=1 in GRUB_CMDLINE_LINUX
+  shell: grep -e 'GRUB_CMDLINE_LINUX=.*ipv6.disable=1.*' /etc/default/grub
+  register: ipv6_disable
+  ignore_errors: True
+  changed_when: False
+
 - name: Disable IPv6
   lineinfile:
     path:   "/etc/default/grub"
-    regexp: "^GRUB_CMDLINE_LINUX="
-    line:   'GRUB_CMDLINE_LINUX="ipv6.disable=1"'
+    regexp: 'GRUB_CMDLINE_LINUX=.(.*).'
+    line: 'GRUB_CMDLINE_LINUX="ipv6.disable=1 \1"'
+    backrefs: yes
+  when: ipv6_disable.rc != 0
