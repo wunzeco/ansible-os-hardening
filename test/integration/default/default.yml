@@ -3,6 +3,7 @@
   hosts: test-kitchen
 
   vars:
+    os_hardening_default_user: "vagrant"
     auditd_space_left_action: email
     auditd_admin_space_left_action: halt
     auditd_max_log_file_action: keep_logs

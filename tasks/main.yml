@@ -18,3 +18,11 @@
 - include: 3_5_uncommon_network_protocols.yml
 #- include: 3_6_firewall_configuration.yml
 - include: 4_1_configure_system_accounting.yml
+#- include: 5_1_configure_cron.yml
+- include: 5_2_ssh_server_configuration.yml
+- include: 5_3_configure_pam.yml
+- include: 5_4_user_accounts_and_environment.yml
+- include: 5_5_securetty.yml
+- include: 5_6_su_command_access.yml
+- include: 6_1_system_file_permissions.yml
+- include: 6_2_user_and_group_settings.yml

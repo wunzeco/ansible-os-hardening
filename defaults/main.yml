@@ -19,3 +19,7 @@ os_hardening_net_modules_disable:
 os_hardening_grub_cmdline_linux:
   - ipv6.disable=1
   - audit=1
+
+os_hardening_default_user:  "ubuntu"
+os_hardening_default_group: "{{ os_hardening_default_user }}"
+os_hardening_scripts_dir:   "/usr/local/os_hardening"

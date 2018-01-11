@@ -1,0 +1,138 @@
+---
+
+- name: START HERE
+  debug: msg='start here'
+
+# 6.2.1 Ensure password fields are not empty (Scored)
+- name: Get unix accounts with empty password field
+  shell: >
+      cat /etc/shadow | awk -F: '($2 == "" ) { print $1}'
+  register: empty_password_accounts
+  changed_when: False
+
+- name: Lock accounts with empty password field
+  command: passwd -l {{ item }}
+  with_items: "{{ empty_password_accounts.stdout_lines }}"
+
+## 6.2.2 Ensure no legacy "+" entries exist in /etc/passwd (Scored)
+#- name: Ensure no legacy "+" entries exist in /etc/passwd
+#  lineinfile:
+#    path:   /etc/passwd
+#    regexp: '^\+:'
+#    state:  absent
+#
+## 6.2.3 Ensure no legacy "+" entries exist in /etc/shadow (Scored)
+#- name: Ensure no legacy "+" entries exist in /etc/shadow
+#  lineinfile:
+#    path:   /etc/shadow
+#    regexp: '^\+:'
+#    state:  absent
+#
+## 6.2.4 Ensure no legacy "+" entries exist in /etc/group (Scored)
+#- name: Ensure no legacy "+" entries exist in /etc/group
+#  lineinfile:
+#    path:   /etc/group
+#    regexp: '^\+:'
+
+# 6.2.2 Ensure no legacy "+" entries exist in /etc/passwd (Scored)
+# 6.2.3 Ensure no legacy "+" entries exist in /etc/shadow (Scored)
+# 6.2.4 Ensure no legacy "+" entries exist in /etc/group (Scored)
+- name: Ensure no legacy "+" entries exist in system configuration files
+  lineinfile:
+    path:   "{{ item }}"
+    regexp: '^\+:'
+    state:  absent
+  with_items:
+    - /etc/passwd
+    - /etc/shadow
+    - /etc/group
+
+# 6.2.5 Ensure root is the only UID 0 account (Scored)
+- name: Get UID 0 accounts
+  shell: >
+      cat /etc/passwd | awk -F: '($3 == 0) { print $1 }'
+  register: uid_0_accounts
+  changed_when: False
+
+- name: Lock non-root UID 0 accounts
+  command: passwd -l {{ item }}
+  when: item.1 != 'root'
+  with_items: "{{ uid_0_accounts.stdout_lines }}"
+
+- name: Ensure root is the only UID 0 account
+  lineinfile:
+    path: /etc/passwd
+    regexp: '^{{ item.1 }}:(.*?):0:(.*)'
+    line:   '{{ item.1 }}:\1:{{ 59900 + item.0 }}:\2'
+    backrefs: yes
+  when: item.1 != 'root'
+  with_indexed_items: "{{ uid_0_accounts.stdout_lines }}"
+
+- name: Create scripts dir
+  file:
+    path:  "{{ os_hardening_scripts_dir }}"
+    owner: root
+    group: root
+    mode:  0755
+    state: directory
+
+# 6.2.6 Ensure root PATH Integrity (Scored)
+- name: Copy script to check root PATH integrity
+  copy:
+    src:  root_path_integrity_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/root_path_integrity_audit.sh"
+    mode: 0700
+
+- name: Run root PATH integrity audit script
+  command: "{{ os_hardening_scripts_dir }}/root_path_integrity_audit.sh"
+  register: root_path_integrity
+  changed_when: False
+
+- name: Print output of root PATH integrity audit script
+  debug: var=root_path_integrity.stdout_lines
+
+- name: Print remediation guide if integrity issues found
+  debug: msg="Remediation | Correct or justify any items discovered by the audit script."
+
+# 6.2.7 Ensure all users' home directories exist (Scored)
+- name: Copy script to audit user home directories
+  copy:
+    src:  home_dirs_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/home_dirs_audit.sh"
+    mode: 0700
+
+- name: Run home dirs audit script
+  command: "{{ os_hardening_scripts_dir }}/home_dirs_audit.sh"
+  register: home_dirs_audit
+  changed_when: False
+
+- name: Print output of home dirs audit script
+  debug: var=home_dirs_audit.stdout_lines
+
+- name: Ensure all users' home directories exist
+  user:
+    name: "{{ item }}"
+    home: "/home/{{ item }}"
+    createhome: yes
+  with_items: "{{ home_dirs_audit.stdout_lines }}"
+
+# 6.2.8 Ensure users' home directories permissions are 750 or more restrictive (Scored)
+- name: Copy script to audit user home directories permissions
+  copy:
+    src:  home_dirs_perms_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/home_dirs_perms_audit.sh"
+    mode: 0700
+
+- name: Run home dirs permissions audit script
+  command: "{{ os_hardening_scripts_dir }}/home_dirs_perms_audit.sh"
+  register: home_dirs_perms_audit
+  changed_when: False
+
+- name: Print output of home dirs permissions audit script
+  debug: var=home_dirs_perms_audit.stdout_lines
+
+- name: Ensure users' home directories permissions are 750 or more restrictive
+  file:
+    path: "{{ item }}"
+    mode: 0750
+  with_items: "{{ home_dirs_perms_audit.stdout_lines }}"

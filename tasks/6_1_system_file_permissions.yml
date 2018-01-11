@@ -1,0 +1,118 @@
+---
+
+# 6.1.1 Audit system file permissions (Not Scored)
+# Remediation step not automatable as it requires manual review of the output of
+# "dpkg --verify" so as to review all installed packages
+
+# 6.1.2 Ensure permissions on /etc/passwd are configured (Scored)
+- name: Ensure permissions on /etc/passwd are configured
+  file:
+    path:  /etc/passwd
+    owner: root
+    group: root
+    mode:  0644
+
+# 6.1.3 Ensure permissions on /etc/shadow are configured (Scored)
+- name: Ensure permissions on /etc/shadow are configured
+  file:
+    path:  /etc/shadow
+    owner: root
+    group: shadow
+    mode:  0640
+
+# 6.1.4 Ensure permissions on /etc/group are configured (Scored)
+- name: Ensure permissions on /etc/group are configured
+  file:
+    path:  /etc/group
+    owner: root
+    group: root
+    mode:  0644
+
+# 6.1.5 Ensure permissions on /etc/gshadow are configured (Scored)
+- name: Ensure permissions on /etc/gshadow are configured
+  file:
+    path:  /etc/gshadow
+    owner: root
+    group: shadow
+    mode:  0640
+
+# 6.1.6 Ensure permissions on /etc/passwd- are configured (Scored)
+- name: Ensure permissions on /etc/passwd- are configured
+  file:
+    path:  /etc/passwd-
+    owner: root
+    group: root
+    mode:  0600
+
+# 6.1.7 Ensure permissions on /etc/shadow- are configured (Scored)
+- name: Ensure permissions on /etc/shadow- are configured
+  file:
+    path:  /etc/shadow-
+    owner: root
+    group: root
+    mode:  0600
+
+# 6.1.8 Ensure permissions on /etc/group- are configured (Scored)
+- name: Ensure permissions on /etc/group- are configured
+  file:
+    path:  /etc/group-
+    owner: root
+    group: root
+    mode:  0600
+
+# 6.1.9 Ensure permissions on /etc/gshadow- are configured (Scored)
+- name: Ensure permissions on /etc/gshadow- are configured
+  file:
+    path:  /etc/gshadow-
+    owner: root
+    group: root
+    mode:  0600
+
+# 6.1.10 Ensure no world writable files exist (Scored)
+- name: Get world writable files
+  shell: >
+      df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -0002
+  register: world_writables
+  changed_when: False
+
+- name: Ensure no world writable files exist (Scored)
+  file:
+    path:  "{{ item }}"
+    mode:  o-w
+  with_items: "{{ world_writables.stdout_lines }}"
+
+# 6.1.11 Ensure no unowned files or directories exist (Scored)
+- name: Get unowned files or directories
+  shell: >
+      df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nouser
+  register: unowned
+  changed_when: False
+
+- name: Ensure no unowned files or directories exist
+  file:
+    path:  "{{ item }}"
+    owner: "{{ os_hardening_default_user }}"
+  with_items: "{{ unowned.stdout_lines }}"
+
+# 6.1.12 Ensure no ungrouped files or directories exist (Scored)
+- name: Get ungrouped files or directories
+  shell: >
+      df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nogroup
+  register: ungrouped
+  changed_when: False
+
+- name: Ensure no ungrouped files or directories exist
+  file:
+    path:  "{{ item }}"
+    group: "{{ os_hardening_default_group }}"
+  with_items: "{{ ungrouped.stdout_lines }}"
+
+# 6.1.13 Audit SUID executables (Not Scored)
+# Remediation step not automatable as it requires manual review of the output of command
+# below, which could change over time:
+#    df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -4000
+
+# 6.1.14 Audit SGID executables (Not Scored)
+# Remediation step not automatable as it requires manual review of the output of command
+# below, which could change over time:
+#    df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -2000
