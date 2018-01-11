@@ -1,0 +1,56 @@
+---
+
+# 5.3.1 Ensure password creation requirements are configured (Scored)
+- name: Install libpam-pwquality
+  apt:
+    name:  libpam-pwquality
+    state: present
+
+- name: Ensure pam_pwquality.so module is configured correctly
+  lineinfile:
+    path: /etc/pam.d/common-password
+    regexp: '^(password\s+requisite\s+pam_pwquality.so).*'
+    line:   '\1 try_first_pass retry=3'
+    backrefs: yes
+
+- name: Ensure password creation requirements are configured
+  ini_file:
+    path: /etc/security/pwquality.conf
+    section: null
+    option:  "{{ item.option }}"
+    value:   "{{ item.value }}"
+    mode:    0644
+    backup:  no
+  with_items:
+    - { option: minlen,  value: 14 }
+    - { option: dcredit, value: -1 }
+    - { option: ucredit, value: -1 }
+    - { option: ocredit, value: -1 }
+    - { option: lcredit, value: -1 }
+
+# 5.3.2 Ensure lockout for failed password attempts is configured (Not Scored)
+- name: Ensure lockout for failed password attempts is configured
+  lineinfile:
+    path: /etc/pam.d/common-auth
+    line: 'auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900'
+
+# 5.3.3 Ensure password reuse is limited (Scored)
+- name: Ensure password reuse is limited
+  lineinfile:
+    path: /etc/pam.d/common-password
+    line: 'password sufficient pam_unix.so remember=5'
+
+# 5.3.4 Ensure password hashing algorithm is SHA-512 (Scored)
+- name: Check sha512 option is configured as password hashing algorithm
+  shell: grep -e 'password.*pam_unix.so.*sha512' /etc/pam.d/common-password
+  register: hashing_algo
+  ignore_errors: True
+  changed_when: False
+
+- name: Ensure password hashing algorithm is SHA-512
+  lineinfile:
+    path:   "/etc/pam.d/common-password"
+    regexp: '^(password.*pam_unix.so.*)'
+    line:   '\1 sha512'
+    backrefs: yes
+  when: hashing_algo.rc != 0

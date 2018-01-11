@@ -1,0 +1,9 @@
+---
+
+# 5.6 Ensure access to the su command is restricted (Scored)
+- name: Ensure access to the su command is restricted
+  lineinfile:
+    path: /etc/pam.d/su
+    regexp: '^#\s+(auth\s+required\s+pam_wheel.so)$'
+    line:   '\1 use_uid'
+    backrefs: yes

@@ -1,0 +1,8 @@
+---
+# 5.5 Ensure root login is restricted to system console (Not Scored)
+
+# Note:
+#   - No specific remediation guideline on contents of /etc/securetty given
+#   - but CIS Benchmark doc says..
+#     Remediation:
+#       Remove entries for any consoles that are not in a physically secure location.

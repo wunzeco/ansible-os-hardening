@@ -1,0 +1,119 @@
+---
+
+# 5.2.1 Ensure permissions on /etc/ssh/sshd_config are configured (Scored)
+- name: Ensure ownership and permission of /etc/ssh/sshd_config is correct
+  file:
+    path:  /etc/ssh/sshd_config
+    owner: 'root'
+    group: 'root'
+    mode:  0600
+
+# 5.2.2 Ensure SSH Protocol is set to 2 (Scored)
+- name: Ensure SSH Protocol is set to 2
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^Protocol.*'
+    line:   'Protocol 2'
+    state:  present
+
+# 5.2.3 Ensure SSH LogLevel is set to INFO (Scored)
+- name: Ensure SSH LogLevel is set to INFO
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^LogLevel.*'
+    line:   'LogLevel INFO'
+    state:  present
+
+# 5.2.4 Ensure SSH X11 forwarding is disabled (Scored)
+- name: Ensure SSH X11 forwarding is disabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^X11Forwarding.*'
+    line:   'X11Forwarding no'
+    state:  present
+
+# 5.2.5 Ensure SSH MaxAuthTries is set to 4 or less (Scored)
+- name: Ensure SSH MaxAuthTries is set to 4
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^MaxAuthTries.*'
+    line:   'MaxAuthTries 4'
+    state:  present
+
+# 5.2.6 Ensure SSH IgnoreRhosts is enabled (Scored)
+- name: Ensure SSH IgnoreRhosts is enabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^IgnoreRhosts.*'
+    line:   'IgnoreRhosts yes'
+    state:  present
+
+# 5.2.7 Ensure SSH HostbasedAuthentication is disabled (Scored)
+- name: Ensure SSH HostbasedAuthentication is disabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^HostbasedAuthentication.*'
+    line:   'HostbasedAuthentication no'
+    state:  present
+
+# 5.2.8 Ensure SSH root login is disabled (Scored)
+- name: Ensure SSH root login is disabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin.*'
+    line:   'PermitRootLogin no'
+    state:  present
+
+# 5.2.9 Ensure SSH PermitEmptyPasswords is disabled (Scored)
+- name: Ensure SSH PermitEmptyPasswords is disabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitEmptyPasswords.*'
+    line:   'PermitEmptyPasswords no'
+    state:  present
+
+# 5.2.10 Ensure SSH PermitUserEnvironment is disabled (Scored)
+- name: Ensure SSH PermitUserEnvironment is disabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitUserEnvironment.*'
+    line:   'PermitUserEnvironment no'
+    state:  present
+
+# 5.2.11 Ensure only approved MAC algorithms are used (Scored)
+- name: Ensure only approved MAC algorithms are used
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^MACs.*'
+    line:   'MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com'
+    state:  present
+
+# 5.2.12 Ensure SSH Idle Timeout Interval is configured (Scored)
+- name: Ensure SSH Idle Timeout Interval is configured
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^{{ item.key }}.*'
+    line:   '{{ item.key }} {{ item.value }}'
+    state:  present
+  with_items:
+    - { key: "ClientAliveInterval", value: 300 }
+    - { key: "ClientAliveCountMax", value: 0 }
+
+# 5.2.13 Ensure SSH LoginGraceTime is set to one minute or less (Scored)
+- name: Ensure SSH LoginGraceTime is set to one minute or less
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^LoginGraceTime.*'
+    line:   'LoginGraceTime 60'
+    state:  present
+
+# 5.2.14 Ensure SSH access is limited (Scored)
+# Users to allow SSH access will vary per site
+
+# 5.2.15 Ensure SSH warning banner is configured (Scored)
+- name: Ensure SSH warning banner is configured
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^Banner.*'
+    line:   'Banner /etc/issue.net'
+    state:  present
