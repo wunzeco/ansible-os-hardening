@@ -1,8 +1,5 @@
 ---
 
-- name: START HERE
-  debug: msg='start here'
-
 # 6.2.1 Ensure password fields are not empty (Scored)
 - name: Get unix accounts with empty password field
   shell: >
@@ -63,7 +60,7 @@
   lineinfile:
     path: /etc/passwd
     regexp: '^{{ item.1 }}:(.*?):0:(.*)'
-    line:   '{{ item.1 }}:\1:{{ 59900 + item.0 }}:\2'
+    line:   '{{ item.1 }}:\1:{{ 5900 + item.0 }}:\2'
     backrefs: yes
   when: item.1 != 'root'
   with_indexed_items: "{{ uid_0_accounts.stdout_lines }}"
@@ -136,3 +133,285 @@
     path: "{{ item }}"
     mode: 0750
   with_items: "{{ home_dirs_perms_audit.stdout_lines }}"
+
+# 6.2.9 Ensure users own their home directories (Scored)
+- name: Copy script to audit user home directories ownership
+  copy:
+    src:  home_dirs_owner_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/home_dirs_owner_audit.sh"
+    mode: 0700
+
+- name: Run home dirs ownership audit script
+  command: "{{ os_hardening_scripts_dir }}/home_dirs_owner_audit.sh"
+  register: home_dirs_owner_audit
+  changed_when: False
+
+- name: Print output of home dirs ownership audit script
+  debug: var=home_dirs_owner_audit.stdout_lines
+
+- name: Ensure users own their home directories
+  file:
+    path: "{{ item.split(':')[0] }}"
+    owner: "{{ item.split(':')[1] }}"
+  with_items: "{{ home_dirs_owner_audit.stdout_lines }}"
+
+# 6.2.10 Ensure users' dot files are not group or world writable (Scored)
+- name: Copy script to audit users dot files group or world permissions
+  copy:
+    src:  user_dotfiles_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/user_dotfiles_audit.sh"
+    mode: 0700
+
+- name: Run user dotfiles audit script
+  command: "{{ os_hardening_scripts_dir }}/user_dotfiles_audit.sh"
+  register: user_dotfiles_audit
+  changed_when: False
+
+- name: Print user dotfiles to resolve permissions for
+  debug: var=user_dotfiles_audit.stdout_lines
+
+# Remediation:
+#     Making global modifications to users' files without alerting the user community can
+#     result in unexpected outages and unhappy users. Therefore, it is recommended that a
+#     monitoring policy be established to report user dot file permissions and determine
+#     the action to be taken in accordance with site policy.
+# However, taking a more conservative approach to resolve.
+- name: Ensure users' dot files are not group or world writable
+  file:
+    path: "{{ item }}"
+    mode: "go-w"
+  with_items: "{{ user_dotfiles_audit.stdout_lines }}"
+
+# 6.2.11 Ensure no users have .forward files (Scored)
+- name: Copy script to audit users .forward files
+  copy:
+    src:  user_dot_forward_file_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/user_dot_forward_file_audit.sh"
+    mode: 0700
+
+- name: Run user .forward file audit script
+  command: "{{ os_hardening_scripts_dir }}/user_dot_forward_file_audit.sh"
+  register: user_dot_forward_file_audit
+  changed_when: False
+
+- name: Print user .forward files that exist
+  debug: var=user_dot_forward_file_audit.stdout_lines
+
+# Remediation:
+#     Making global modifications to users' files without alerting the user community can
+#     result in unexpected outages and unhappy users. Therefore, it is recommended that a
+#     monitoring policy be established to report user .forward files and determine
+#     the action to be taken in accordance with site policy.
+# However, taking a more conservative approach to resolve.
+- name: Ensure no users have .forward files
+  file:
+    path:  "{{ item }}"
+    state: absent
+  with_items: "{{ user_dot_forward_file_audit.stdout_lines }}"
+
+# 6.2.12 Ensure no users have .netrc files (Scored)
+- name: Copy script to audit users .netrc files
+  copy:
+    src:  user_dot_netrc_file_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/user_dot_netrc_file_audit.sh"
+    mode: 0700
+
+- name: Run user .netrc file audit script
+  command: "{{ os_hardening_scripts_dir }}/user_dot_netrc_file_audit.sh"
+  register: user_dot_netrc_file_audit
+  changed_when: False
+
+- name: Print user .netrc files that exist
+  debug: var=user_dot_netrc_file_audit.stdout_lines
+
+# Remediation:
+#     Making global modifications to users' files without alerting the user community can
+#     result in unexpected outages and unhappy users. Therefore, it is recommended that a
+#     monitoring policy be established to report user .netrc files and determine
+#     the action to be taken in accordance with site policy.
+# However, taking a more conservative approach to resolve.
+- name: Ensure no users have .netrc files
+  file:
+    path:  "{{ item }}"
+    state: absent
+  with_items: "{{ user_dot_netrc_file_audit.stdout_lines }}"
+
+# 6.2.13 Ensure users' .netrc Files are not group or world accessible (Scored)
+- name: Copy script to audit users .netrc files permission
+  copy:
+    src:  user_dot_netrc_file_perms_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/user_dot_netrc_file_perms_audit.sh"
+    mode: 0700
+
+- name: Run user .netrc file permission audit script
+  command: "{{ os_hardening_scripts_dir }}/user_dot_netrc_file_perms_audit.sh"
+  register: user_dot_netrc_file_perms_audit
+  changed_when: False
+
+- name: Print user .netrc files with not recommended permission
+  debug: var=user_dot_netrc_file_perms_audit.stdout_lines
+
+# Remediation:
+#     Making global modifications to users' files without alerting the user community can
+#     result in unexpected outages and unhappy users. Therefore, it is recommended that a
+#     monitoring policy be established to report user .netrc file permission and determine
+#     the action to be taken in accordance with site policy.
+# However, taking a more conservative approach to resolve.
+- name: Ensure users' .netrc Files are not group or world accessible
+  file:
+    path: "{{ item }}"
+    mode: "go-rwx"
+  with_items: "{{ user_dot_netrc_file_perms_audit.stdout_lines }}"
+
+# 6.2.14 Ensure no users have .rhosts files (Scored)
+- name: Copy script to audit users .rhosts files
+  copy:
+    src:  user_dot_rhosts_file_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/user_dot_rhosts_file_audit.sh"
+    mode: 0700
+
+- name: Run user .rhosts file audit script
+  command: "{{ os_hardening_scripts_dir }}/user_dot_rhosts_file_audit.sh"
+  register: user_dot_rhosts_file_audit
+  changed_when: False
+
+- name: Print user .rhosts files
+  debug: var=user_dot_rhosts_file_audit.stdout_lines
+
+# Remediation:
+#     Making global modifications to users' files without alerting the user community can
+#     result in unexpected outages and unhappy users. Therefore, it is recommended that a
+#     monitoring policy be established to report user .rhosts files and determine
+#     the action to be taken in accordance with site policy.
+# However, taking a more conservative approach to resolve.
+- name: Ensure no users have .rhosts files
+  file:
+    path:  "{{ item }}"
+    state: absent
+  with_items: "{{ user_dot_rhosts_file_audit.stdout_lines }}"
+
+# 6.2.15 Ensure all groups in /etc/passwd exist in /etc/group (Scored)
+- name: Copy script to audit user groups in /etc/passwd
+  copy:
+    src:  user_groups_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/user_groups_audit.sh"
+    mode: 0700
+
+- name: Run user groups audit script
+  command: "{{ os_hardening_scripts_dir }}/user_groups_audit.sh"
+  register: user_groups_audit
+  changed_when: False
+
+# Remediation:
+#     Analyze the output of the Audit step above and perform the appropriate action to
+#     correct any discrepancies found.
+- name: Print user gids in /etc/passwd that do not exist in /etc/group
+  debug: var=user_groups_audit.stdout_lines
+
+# 6.2.16 Ensure no duplicate UIDs exist (Scored)
+- name: Copy script to audit duplicate uids
+  copy:
+    src:  duplicate_uids_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/duplicate_uids_audit.sh"
+    mode: 0700
+
+- name: Run duplicate uids audit script
+  command: "{{ os_hardening_scripts_dir }}/duplicate_uids_audit.sh"
+  register: duplicate_uids_audit
+  changed_when: False
+
+# Remediation:
+#     Based on the results of the audit script, establish unique UIDs and review all
+#     files owned by the shared UIDs to determine which UID they are supposed to belong to.
+- name: Print duplicate uids
+  debug: var=duplicate_uids_audit.stdout_lines
+
+# 6.2.17 Ensure no duplicate GIDs exist (Scored)
+- name: Copy script to audit duplicate gids
+  copy:
+    src:  duplicate_gids_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/duplicate_gids_audit.sh"
+    mode: 0700
+
+- name: Run duplicate gids audit script
+  command: "{{ os_hardening_scripts_dir }}/duplicate_gids_audit.sh"
+  register: duplicate_gids_audit
+  changed_when: False
+
+# Remediation:
+#     Based on the results of the audit script, establish unique GIDs and review all
+#     files owned by the shared GID to determine which group they are supposed to belong to.
+- name: Print duplicate gids
+  debug: var=duplicate_gids_audit.stdout_lines
+
+# 6.2.18 Ensure no duplicate user names exist (Scored)
+- name: Copy script to audit duplicate user names
+  copy:
+    src:  duplicate_user_names_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/duplicate_user_names_audit.sh"
+    mode: 0700
+
+- name: Run duplicate user names audit script
+  command: "{{ os_hardening_scripts_dir }}/duplicate_user_names_audit.sh"
+  register: duplicate_user_names_audit
+  changed_when: False
+
+# Remediation:
+#     Based on the results of the audit script, establish unique user names for the users.
+#     users. File ownerships will automatically reflect the change as long as the users
+#     have unique UIDs.
+- name: Print duplicate user names
+  debug: var=duplicate_user_names_audit.stdout_lines
+
+# 6.2.19 Ensure no duplicate group names exist (Scored)
+- name: Copy script to audit duplicate group names
+  copy:
+    src:  duplicate_group_names_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/duplicate_group_names_audit.sh"
+    mode: 0700
+
+- name: Run duplicate group names audit script
+  command: "{{ os_hardening_scripts_dir }}/duplicate_group_names_audit.sh"
+  register: duplicate_group_names_audit
+  changed_when: False
+
+# Remediation:
+#     Based on the results of the audit script, establish unique names for the user
+#     groups. File group ownerships will automatically reflect the change as long as the
+#     groups have unique GIDs.
+- name: Print duplicate group names
+  debug: var=duplicate_group_names_audit.stdout_lines
+
+# 6.2.20 Ensure shadow group is empty (Scored)
+- name: Copy script to audit shadow group
+  copy:
+    src:  shadow_group_audit.sh
+    dest: "{{ os_hardening_scripts_dir }}/shadow_group_audit.sh"
+    mode: 0700
+
+- name: Run shadow group audit script
+  command: "{{ os_hardening_scripts_dir }}/shadow_group_audit.sh"
+  register: shadow_group_audit
+  changed_when: False
+
+- name: Print users assigned to the shadow group
+  debug: var=shadow_group_audit.stdout_lines
+
+- name: Create group for users assigned to shadow group
+  group:
+    name:  "{{ item }}"
+    state: present
+  with_items: "{{ shadow_group_audit.stdout_lines }}"
+
+- name: Update primary group of users assigned to shadow group
+  user:
+    name:  "{{ item }}"
+    group: "{{ item }}"
+  with_items: "{{ shadow_group_audit.stdout_lines }}"
+
+- name: Ensure shadow group is empty
+  lineinfile:
+    path: /etc/group
+    regexp: '^(shadow:[^:]*:[^:]*:)[^:]*'
+    line:   '\1'
+    backrefs: yes
