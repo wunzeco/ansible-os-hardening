@@ -23,3 +23,6 @@ os_hardening_grub_cmdline_linux:
 os_hardening_default_user:  "ubuntu"
 os_hardening_default_group: "{{ os_hardening_default_user }}"
 os_hardening_scripts_dir:   "/usr/local/os_hardening"
+os_hardening_dist_upgrade:  false            # Upgrade distribution (apt-get dist-upgrade)
+os_hardening_skip_firewall_config: true
+os_hardening_skip_cron_config: true

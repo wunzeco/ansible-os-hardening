@@ -1,0 +1,9 @@
+---
+
+# 1.8 Ensure updates, patches, and additional security software are installed (Not Scored)
+
+- name: Ensure updates, patches, and additional security software are installed
+  apt:
+    update_cache:
+    upgrade: dist
+  when: os_hardening_dist_upgrade

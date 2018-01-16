@@ -1,0 +1,18 @@
+---
+
+# 4.2.1.1 Ensure rsyslog Service is enabled (Scored)
+# 4.2.1.2 Ensure logging is configured (Not Scored)
+# 4.2.1.3 Ensure rsyslog default file permissions configured (Scored)
+# 4.2.1.4 Ensure rsyslog is configured to send logs to a remote log host (Scored)
+# 4.2.1.5 Ensure remote rsyslog messages are only accepted on designated log hosts. (Not Scored)
+# 4.2.2.1 Ensure syslog-ng service is enabled (Scored)
+# 4.2.2.2 Ensure logging is configured (Not Scored)
+# 4.2.2.3 Ensure syslog-ng default file permissions configured (Scored)
+# 4.2.2.4 Ensure syslog-ng is configured to send logs to a remote log host (Scored)
+# 4.2.2.5 Ensure remote syslog-ng messages are only accepted on designated log hosts (Not Scored)
+# 4.2.3 Ensure rsyslog or syslog-ng is installed (Scored)
+# 4.2.4 Ensure permissions on all logfiles are configured (Scored)
+
+# Logging configuration is very site specific. While for local logging rsyslog is normally
+# the default utility, other tools have sprung to prominence for remote logging.
+# So skipping!

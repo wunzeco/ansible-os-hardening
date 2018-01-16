@@ -9,6 +9,7 @@
 - include: 1_5_additional_process_hardening.yml
 - include: 1_6_mandatory_access_control.yml
 - include: 1_7_warning_banners.yml
+- include: 1_8_updates_and_patches.yml
 - include: 2_2_special_purpose_services.yml
 - include: 2_3_service_clients.yml
 - include: 3_1_network_parameters_host_only.yml
@@ -16,9 +17,12 @@
 - include: 3_3_ipv6.yml
 - include: 3_4_tcp_wrappers.yml
 - include: 3_5_uncommon_network_protocols.yml
-#- include: 3_6_firewall_configuration.yml
+- include: 3_6_firewall_configuration.yml
+  when: not os_hardening_skip_firewall_config
 - include: 4_1_configure_system_accounting.yml
-#- include: 5_1_configure_cron.yml
+- include: 4_2_configure_logging.yml
+- include: 5_1_configure_cron.yml
+  when: not os_hardening_skip_cron_config
 - include: 5_2_ssh_server_configuration.yml
 - include: 5_3_configure_pam.yml
 - include: 5_4_user_accounts_and_environment.yml

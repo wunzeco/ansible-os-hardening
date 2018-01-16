@@ -17,3 +17,9 @@
     line:   '#start on \1'
     backrefs: yes
   when: svc.stat.exists
+
+- name: Stop {{ svc_item.name }}
+  service:
+    name:  "{{ svc_item.name }}"
+    state: stopped
+  when: svc.stat.exists

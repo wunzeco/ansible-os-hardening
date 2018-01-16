@@ -60,7 +60,7 @@
   when: postfix.stat.exists
 
 - name: Restart postfix service
-  service: 
+  service:
     name: postfix
     state: restarted
   when: postfix_conf_update|success
