@@ -4,7 +4,7 @@
 
 - name: Ensure SELinux is not disabled in bootloader configuration | GRUB_CMDLINE_LINUX
   lineinfile:
-    path: /tmp/grub
+    path: /etc/default/grub
     regexp: 'GRUB_CMDLINE_LINUX=(.*)({{ item }})(.*)'
     line:   'GRUB_CMDLINE_LINUX=\1\2'
     backrefs: yes
@@ -16,7 +16,7 @@
 
 - name: Ensure SELinux is not disabled in bootloader configuration | GRUB_CMDLINE_LINUX_DEFAULT
   lineinfile:
-    path: /tmp/grub
+    path: /etc/default/grub
     regexp: 'GRUB_CMDLINE_LINUX_DEFAULT=(.*)({{ item }})(.*)'
     line:   'GRUB_CMDLINE_LINUX_DEFAULT=\1\2'
     backrefs: yes
