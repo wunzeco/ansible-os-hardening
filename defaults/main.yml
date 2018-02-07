@@ -1,20 +1,20 @@
 ---
 
 os_hardening_fs_modules_disable:
-  - cramfs
-  - freevxfs
-  - jffs2
-  - hfs
-  - hfsplus
-  - squashfs
-  - udf
-  - vfat
+  - { name: cramfs,   cis_id: 1.1.1.1 }
+  - { name: freevxfs, cis_id: 1.1.1.2 }
+  - { name: jffs2,    cis_id: 1.1.1.3 }
+  - { name: hfs,      cis_id: 1.1.1.4 }
+  - { name: hfsplus,  cis_id: 1.1.1.5 }
+  - { name: squashfs, cis_id: 1.1.1.6 }
+  - { name: udf,      cis_id: 1.1.1.7 }
+  - { name: vfat,     cis_id: 1.1.1.8 }
 
 os_hardening_net_modules_disable:
-  - dccp
-  - sctp
-  - rds
-  - tipc
+  - { name: dccp, cis_id: 3.5.1 }
+  - { name: sctp, cis_id: 3.5.2 }
+  - { name: rds,  cis_id: 3.5.3 }
+  - { name: tipc, cis_id: 3.5.4 }
 
 os_hardening_grub_cmdline_linux:
   - ipv6.disable=1
@@ -26,3 +26,6 @@ os_hardening_scripts_dir:   "/usr/local/os_hardening"
 os_hardening_dist_upgrade:  false            # Upgrade distribution (apt-get dist-upgrade)
 os_hardening_skip_firewall_config: true
 os_hardening_skip_cron_config: true
+os_hardening_mac_package: apparmor    # apparmor or selinux - Mandatory Access Control package
+
+os_hardening_exclusions: []  # CIS item IDs

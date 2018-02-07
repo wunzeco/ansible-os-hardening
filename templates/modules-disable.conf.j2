@@ -3,9 +3,13 @@
 
 # Filesystem modules
 {% for module in os_hardening_fs_modules_disable %}
-install {{ module }} /bin/true
+{% if module.cis_id not in os_hardening_exclusions %}
+install {{ module.name }} /bin/true
+{% endif %}
 {% endfor %}
 # Network Protocols modules
 {% for module in os_hardening_net_modules_disable %}
-install {{ module }} /bin/true
+{% if module.cis_id not in os_hardening_exclusions %}
+install {{ module.name }} /bin/true
+{% endif %}
 {% endfor %}

@@ -9,6 +9,8 @@
     group: root
     mode:  0644
     state: touch
+  when: "'1.5.1' not in os_hardening_exclusions"
+  tags: [ scored, 1.5.1 ]
 
 - name: Set hard limit on core dumps
   pam_limits:
@@ -17,14 +19,19 @@
     limit_type: hard
     limit_item: core
     value:      0
+  when: "'1.5.1' not in os_hardening_exclusions"
+  tags: [ scored, 1.5.1 ]
 
 - name: Set sysctl fs.suid_dumpable variable to prevent setuid programs from dumping core
   sysctl:
     name: fs.suid_dumpable
     value: 0
     state: present
+  when: "'1.5.1' not in os_hardening_exclusions"
+  tags: [ scored, 1.5.1 ]
 
-# 1.5.2 Ensure XD/NX support is enabled (Not Scored)
+- debug: msg='1.5.2 Ensure XD/NX support is enabled (Not Scored) | 32 bit systems only'
+  tags: [ notscored, 1.5.2 ]
 
 # 1.5.3 Ensure address space layout randomization (ASLR) is enabled (Scored)
 
@@ -33,6 +40,8 @@
     name: kernel.randomize_va_space
     value: 2
     state: present
+  when: "'1.5.3' not in os_hardening_exclusions"
+  tags: [ scored, 1.5.3 ]
 
 # 1.5.4 Ensure prelink is disabled (Scored)
 
@@ -40,3 +49,5 @@
   apt:
     name:  prelink
     state: absent
+  when: "'1.5.4' not in os_hardening_exclusions"
+  tags: [ scored, 1.5.4 ]

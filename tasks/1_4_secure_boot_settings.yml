@@ -1,11 +1,17 @@
 ---
 
+# 1.4.1 Ensure permissions on bootloader config are configured (Scored)
 - name: Set permissions on grub config file | 1.4.1
   file:
     path:  /boot/grub/grub.cfg
     owner: root
     group: root
     mode:  0600
+  when: "'1.4.1' not in os_hardening_exclusions"
+  tags: [ scored, 1.4.1 ]
 
 - debug: msg='1.4.2 Ensure bootloader password is set (Scored)'
+  tags: [ scored, 1.4.2 ]
+
 - debug: msg='1.4.3 Ensure authentication required for single user mode (Scored)'
+  tags: [ scored, 1.4.3 ]

@@ -10,7 +10,7 @@
 # iptables -P OUTPUT DROP
 # iptables -P FORWARD DROP
 ## WARNING: Changing firewall settings while connected over network can result
-##          in being locked out of the system. 
+##          in being locked out of the system.
 ##          Do NOT do it, you most CERTAINLY will be locked out !!!
 #- name: Configure default deny firewall policy
 #  iptables:
@@ -71,5 +71,5 @@
 ## 3.6.5 Ensure firewall rules exist for all open ports (Scored)
 ## iptables -A INPUT -p <protocol> --dport <port> -m state --state NEW -j ACCEPT
 ## Hmmm... I wonder if this implies keeping an inventory of listening ports per
-## host within a datacenter so as to add a rule for each one. 
+## host within a datacenter so as to add a rule for each one.
 ## How is this practical to manage? Seems like a unnecessary overhead
