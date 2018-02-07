@@ -91,3 +91,6 @@
 
   roles:
     - ansible-os-hardening
+
+
+- include: roles/ansible-os-hardening/test/cis-benchmark.yml
