@@ -1,10 +1,40 @@
 ---
 
-# ensure inetd is not installed
-# ensure xinetd is not installed
+# 2.1.1 Ensure chargen services are not enabled (Scored)
+# 2.1.2 Ensure daytime services are not enabled (Scored)
+# 2.1.3 Ensure discard services are not enabled (Scored)
+# 2.1.4 Ensure echo services are not enabled (Scored)
+# 2.1.5 Ensure time services are not enabled (Scored)
+# 2.1.6 Ensure rsh server is not enabled (Scored)
+# 2.1.7 Ensure talk server is not enabled (Scored)
+# 2.1.8 Ensure telnet server is not enabled (Scored)
+# 2.1.9 Ensure tftp server is not enabled (Scored)
 
+# This task is probably pointless but is added for completeness sake.
+- name: Ensure inetd services are not enabled
+  debug:
+    msg:  "Ensure {{ item.name }} services are not enabled | Addressed by uninstalling inetd and xinetd"
+  with_items: "{{ os_hardening_inetd_services }}"
+  when: item.cis_id not in os_hardening_exclusions
+  tags:
+    - scored
+    - 2.1.1
+    - 2.1.2
+    - 2.1.3
+    - 2.1.4
+    - 2.1.5
+    - 2.1.6
+    - 2.1.7
+    - 2.1.8
+    - 2.1.9
+
+# 2.1.10 Ensure xinetd is not enabled (Scored)
 - name: Uninstall inetd and xinetd
   apt:
     name:  "{{ item }}"
     state: absent
   with_items: [ openbsd-inetd, xinetd, inetutils-inetd ]
+  when: "'2.1.10' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 2.1.10

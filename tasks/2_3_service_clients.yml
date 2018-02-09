@@ -6,14 +6,17 @@
 ## 2.3.4 Ensure telnet client is not installed (Scored)
 ## 2.3.5 Ensure LDAP client is not installed (Scored)
 
-- name: Uninstall {{ item }}
+- name: Uninstall {{ item.name }}
   apt:
-    name: "{{ item }}"
+    name:  "{{ item.name }}"
+    purge: yes
     state: absent
-  with_items:
-    - nis
-    - rsh-client
-    - rsh-redone-client
-    - talk
-    - telnet
-    - ldap-utils
+  with_items: "{{ os_hardening_service_clients }}"
+  when: item.cis_id not in os_hardening_exclusions
+  tags:
+    - scored
+    - 2.3.1
+    - 2.3.2
+    - 2.3.3
+    - 2.3.4
+    - 2.3.5
