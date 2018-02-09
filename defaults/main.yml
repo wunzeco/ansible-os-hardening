@@ -53,9 +53,10 @@ os_hardening_net_modules_disable:
   - { name: rds,  cis_id: 3.5.3 }
   - { name: tipc, cis_id: 3.5.4 }
 
-os_hardening_grub_cmdline_linux:
-  - ipv6.disable=1
-  - audit=1
+# What's this for?
+#os_hardening_grub_cmdline_linux:
+#  - ipv6.disable=1
+#  - audit=1
 
 os_hardening_default_user:  "ubuntu"
 os_hardening_default_group: "{{ os_hardening_default_user }}"

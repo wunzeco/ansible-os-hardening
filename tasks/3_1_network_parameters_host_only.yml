@@ -6,6 +6,10 @@
     name: net.ipv4.ip_forward
     value: 0
     state: present
+  when: "'3.1.1' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 3.1.1
 
 ## 3.1.2 Ensure packet redirect sending is disabled (Scored)
 - name: Disable packet redirect sending
@@ -16,3 +20,7 @@
   with_items:
     - { param: net.ipv4.conf.all.send_redirects, value: 0 }
     - { param: net.ipv4.conf.default.send_redirects, value: 0 }
+  when: "'3.1.2' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 3.1.2
