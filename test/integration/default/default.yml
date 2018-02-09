@@ -94,4 +94,10 @@
 
 
 - include: roles/ansible-os-hardening/test/integration/default/cis-benchmark.yml
-- include: roles/ansible-os-hardening/test/integration/default/cis-cat.yml
+
+# Note:
+# Unfortunately CIS-CAT bundle archive is too big (60M) to be committed to Github.
+# This implies that the CIS-CAT bundle archive has to be sourced separately and saved
+# directly under the test directory of this role before uncommenting the line below
+# to include cis-cat.yml playbook
+#- include: roles/ansible-os-hardening/test/integration/default/cis-cat.yml
