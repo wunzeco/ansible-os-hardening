@@ -5,6 +5,8 @@
   apt:
     name:  libpam-pwquality
     state: present
+  when: "'5.3.1' not in os_hardening_exclusions"
+  tags: [ scored, '5.3.1' ]
 
 - name: Ensure pam_pwquality.so module is configured correctly
   lineinfile:
@@ -12,6 +14,8 @@
     regexp: '^(password\s+requisite\s+pam_pwquality.so).*'
     line:   '\1 try_first_pass retry=3'
     backrefs: yes
+  when: "'5.3.1' not in os_hardening_exclusions"
+  tags: [ scored, '5.3.1' ]
 
 - name: Ensure password creation requirements are configured
   ini_file:
@@ -27,18 +31,24 @@
     - { option: ucredit, value: -1 }
     - { option: ocredit, value: -1 }
     - { option: lcredit, value: -1 }
+  when: "'5.3.1' not in os_hardening_exclusions"
+  tags: [ scored, '5.3.1' ]
 
 # 5.3.2 Ensure lockout for failed password attempts is configured (Not Scored)
 - name: Ensure lockout for failed password attempts is configured
   lineinfile:
     path: /etc/pam.d/common-auth
     line: 'auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900'
+  when: "'5.3.2' not in os_hardening_exclusions"
+  tags: [ scored, '5.3.2' ]
 
 # 5.3.3 Ensure password reuse is limited (Scored)
 - name: Ensure password reuse is limited
   lineinfile:
     path: /etc/pam.d/common-password
     line: 'password sufficient pam_unix.so remember=5'
+  when: "'5.3.3' not in os_hardening_exclusions"
+  tags: [ scored, '5.3.3' ]
 
 # 5.3.4 Ensure password hashing algorithm is SHA-512 (Scored)
 - name: Check sha512 option is configured as password hashing algorithm
@@ -46,6 +56,8 @@
   register: hashing_algo
   ignore_errors: True
   changed_when: False
+  when: "'5.3.4' not in os_hardening_exclusions"
+  tags: [ scored, '5.3.4' ]
 
 - name: Ensure password hashing algorithm is SHA-512
   lineinfile:
@@ -53,4 +65,5 @@
     regexp: '^(password.*pam_unix.so.*)'
     line:   '\1 sha512'
     backrefs: yes
-  when: hashing_algo.rc != 0
+  when: "'5.3.4' not in os_hardening_exclusions and hashing_algo.rc != 0"
+  tags: [ scored, '5.3.4' ]
