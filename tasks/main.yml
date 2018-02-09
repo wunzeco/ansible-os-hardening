@@ -49,7 +49,6 @@
 
 - include: 3_6_firewall_configuration.yml
   tags: [ '3.6' ]
-  when: not os_hardening_skip_firewall_config
 
 - include: 4_1_configure_system_accounting.yml
   tags: [ '4.1' ]
@@ -59,7 +58,6 @@
 
 - include: 5_1_configure_cron.yml
   tags: [ '5.1' ]
-  when: not os_hardening_skip_cron_config
 
 - include: 5_2_ssh_server_configuration.yml
   tags: [ '5.2' ]

@@ -11,6 +11,8 @@
     owner: root
     group: root
     mode:  0644
+  when: "'6.1.2' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.2' ]
 
 # 6.1.3 Ensure permissions on /etc/shadow are configured (Scored)
 - name: Ensure permissions on /etc/shadow are configured
@@ -19,6 +21,8 @@
     owner: root
     group: shadow
     mode:  0640
+  when: "'6.1.3' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.3' ]
 
 # 6.1.4 Ensure permissions on /etc/group are configured (Scored)
 - name: Ensure permissions on /etc/group are configured
@@ -27,6 +31,8 @@
     owner: root
     group: root
     mode:  0644
+  when: "'6.1.4' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.4' ]
 
 # 6.1.5 Ensure permissions on /etc/gshadow are configured (Scored)
 - name: Ensure permissions on /etc/gshadow are configured
@@ -35,6 +41,8 @@
     owner: root
     group: shadow
     mode:  0640
+  when: "'6.1.5' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.5' ]
 
 # 6.1.6 Ensure permissions on /etc/passwd- are configured (Scored)
 - name: Ensure permissions on /etc/passwd- are configured
@@ -43,6 +51,8 @@
     owner: root
     group: root
     mode:  0600
+  when: "'6.1.6' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.6' ]
 
 # 6.1.7 Ensure permissions on /etc/shadow- are configured (Scored)
 - name: Ensure permissions on /etc/shadow- are configured
@@ -51,6 +61,8 @@
     owner: root
     group: root
     mode:  0600
+  when: "'6.1.7' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.7' ]
 
 # 6.1.8 Ensure permissions on /etc/group- are configured (Scored)
 - name: Ensure permissions on /etc/group- are configured
@@ -59,6 +71,8 @@
     owner: root
     group: root
     mode:  0600
+  when: "'6.1.8' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.8' ]
 
 # 6.1.9 Ensure permissions on /etc/gshadow- are configured (Scored)
 - name: Ensure permissions on /etc/gshadow- are configured
@@ -67,6 +81,8 @@
     owner: root
     group: root
     mode:  0600
+  when: "'6.1.9' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.9' ]
 
 # 6.1.10 Ensure no world writable files exist (Scored)
 - name: Get world writable files
@@ -80,6 +96,8 @@
     path:  "{{ item }}"
     mode:  o-w
   with_items: "{{ world_writables.stdout_lines }}"
+  when: "'6.1.10' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.10' ]
 
 # 6.1.11 Ensure no unowned files or directories exist (Scored)
 - name: Get unowned files or directories
@@ -93,6 +111,8 @@
     path:  "{{ item }}"
     owner: "{{ os_hardening_default_user }}"
   with_items: "{{ unowned.stdout_lines }}"
+  when: "'6.1.11' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.11' ]
 
 # 6.1.12 Ensure no ungrouped files or directories exist (Scored)
 - name: Get ungrouped files or directories
@@ -106,6 +126,8 @@
     path:  "{{ item }}"
     group: "{{ os_hardening_default_group }}"
   with_items: "{{ ungrouped.stdout_lines }}"
+  when: "'6.1.12' not in os_hardening_exclusions"
+  tags: [ scored, '6.1.12' ]
 
 # 6.1.13 Audit SUID executables (Not Scored)
 # Remediation step not automatable as it requires manual review of the output of command
