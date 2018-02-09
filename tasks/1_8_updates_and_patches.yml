@@ -6,4 +6,7 @@
   apt:
     update_cache:
     upgrade: dist
-  when: os_hardening_dist_upgrade
+  when: "'1.8' not in os_hardening_exclusions and os_hardening_dist_upgrade"
+  tags:
+    - notscored
+    - "1.8"

@@ -5,6 +5,11 @@
   apt:
     name:  tcpd
     state: present
+  when: "'3.4.1' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 3.4.1
+
 
 ## 3.4.2 Ensure /etc/hosts.allow is configured (Scored)
 ## 3.4.3 Ensure /etc/hosts.deny is configured (Scored)
@@ -21,3 +26,7 @@
   with_items:
     - /etc/hosts.allow
     - /etc/hosts.deny
+  when: "'3.4.4' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 3.4.4

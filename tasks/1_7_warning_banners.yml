@@ -1,5 +1,7 @@
 ---
 
+# 1.7.1.1 Ensure message of the day is configured properly (Scored)
+# 1.7.1.4 Ensure permissions on /etc/motd are configured (Not Scored)
 - name: Configure message of the day (motd) banner
   copy:
     src:   motd
@@ -7,9 +9,14 @@
     owner: root
     group: root
     mode:  0644
+  when: "'1.7.1.1' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 1.7.1.1
+    - 1.7.1.4
 
 # 1.7.1.2 Ensure local login warning banner is configured properly (Not Scored)
-
+# 1.7.1.5 Ensure permissions on /etc/issue are configured (Scored)
 - name: Configure local login warning banner
   copy:
     content: "Authorized uses only. All activity may be monitored and reported."
@@ -17,17 +24,28 @@
     owner: root
     group: root
     mode:  0644
-  when: os_hardening_not_scored_enable|default('false')
+  when: "'1.7.1.2' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 1.7.1.2
+    - 1.7.1.5
 
+# 1.7.1.3 Ensure remote login warning banner is configured properly (Not Scored)
+# 1.7.1.6 Ensure permissions on /etc/issue.net are configured (Not Scored)
 - name: Configure remote login warning banner
   copy:
     content: "Authorized uses only. All activity may be monitored and reported."
-    dest: /etc/issue
+    dest: /etc/issue.net
     owner: root
     group: root
     mode:  0644
-  when: os_hardening_not_scored_enable|default('false')
+  when: "'1.7.1.3' not in os_hardening_exclusions"
+  tags:
+    - notscored
+    - 1.7.1.3
+    - 1.7.1.6
 
-# 1.8 Ensure updates, patches, and additional security software are installed (Not Scored)
-# apt-get upgrade - noninteractive, yes, keep current config
-# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+
+# 1.7.2 Ensure GDM login banner is configured (Scored)
+# GDM = GNOME Display Manager which handles graphical login for GNOME based systems.
+# Note: Not implemented because the target of this role are GUI-less servers.

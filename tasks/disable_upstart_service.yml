@@ -1,14 +1,23 @@
 ---
 
-- set_fact:
-    svc_item: "{{ item }}"
-
 - debug: msg="Ensure {{ svc_item.name }} is not enabled"
 
 - name: Check if {{ svc_item.script }} exists
   stat:
     path: "{{ svc_item.script }}"
+  when: svc_item.cis_id not in os_hardening_exclusions
   register: svc
+  tags:
+    - scored
+    - 2.2.3
+    - 2.2.4
+    - 2.2.5
+    - 2.2.5
+    - 2.2.7
+    - 2.2.9
+    - 2.2.11
+    - 2.2.12
+    - 2.2.13
 
 - name: Comment out "start" line in {{ svc_item.script }}
   lineinfile:
@@ -16,10 +25,32 @@
     regexp: '^start on (.*)'
     line:   '#start on \1'
     backrefs: yes
-  when: svc.stat.exists
+  when: svc_item.cis_id not in os_hardening_exclusions and svc.stat.exists
+  tags:
+    - scored
+    - 2.2.3
+    - 2.2.4
+    - 2.2.5
+    - 2.2.5
+    - 2.2.7
+    - 2.2.9
+    - 2.2.11
+    - 2.2.12
+    - 2.2.13
 
 - name: Stop {{ svc_item.name }}
   service:
     name:  "{{ svc_item.name }}"
     state: stopped
-  when: svc.stat.exists
+  when: svc_item.cis_id not in os_hardening_exclusions and svc.stat.exists
+  tags:
+    - scored
+    - 2.2.3
+    - 2.2.4
+    - 2.2.5
+    - 2.2.5
+    - 2.2.7
+    - 2.2.9
+    - 2.2.11
+    - 2.2.12
+    - 2.2.13

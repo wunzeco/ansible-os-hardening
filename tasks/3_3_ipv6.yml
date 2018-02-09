@@ -9,6 +9,11 @@
   with_items:
     - { param: net.ipv6.conf.all.accept_ra, value: 0 }
     - { param: net.ipv6.conf.default.accept_ra, value: 0 }
+  when: "'3.3.1' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 3.3.1
+
 
 ## 3.3.2 Ensure IPv6 redirects are not accepted (Not Scored)
 - name: Reject IPv6 redirects
@@ -19,6 +24,11 @@
   with_items:
     - { param: net.ipv6.conf.all.accept_redirects, value: 0 }
     - { param: net.ipv6.conf.default.accept_redirects, value: 0 }
+  when: "'3.3.2' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 3.3.2
+
 
 ## 3.3.3 Ensure IPv6 is disabled (Not Scored)
 - name: Check for ipv6.disable=1 in GRUB_CMDLINE_LINUX
@@ -26,11 +36,19 @@
   register: ipv6_disable
   ignore_errors: True
   changed_when: False
+  when: "'3.3.3' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 3.3.3
+
 
 - name: Disable IPv6
   lineinfile:
     path:   "/etc/default/grub"
     regexp: 'GRUB_CMDLINE_LINUX=.(.*).'
-    line: 'GRUB_CMDLINE_LINUX="ipv6.disable=1 \1"'
+    line:   'GRUB_CMDLINE_LINUX="ipv6.disable=1 \1"'
     backrefs: yes
-  when: ipv6_disable.rc != 0
+  when: "'3.3.3' not in os_hardening_exclusions and ipv6_disable.rc != 0"
+  tags:
+    - scored
+    - 3.3.3

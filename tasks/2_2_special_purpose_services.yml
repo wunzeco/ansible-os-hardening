@@ -1,15 +1,28 @@
 ---
 
+# 2.2.1.1 Ensure time synchronization is in use (Not Scored)
+# 2.2.1.3 Ensure chrony is configured (Scored)
+
+# NTP configuration handled by one of this role's dependencies
+# 2.2.1.2 Ensure ntp is configured (Scored)
 - name: Install ntp
   apt:
     name:  ntp
     state: present
+  when: "'2.2.1.2' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 2.2.1.2
 
 # 2.2.2 Ensure X Window System is not installed (Scored)
 - name: Uninstall x window system packages
   apt:
     name:  xserver-xorg*
     state: absent
+  when: "'2.2.2' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 2.2.2
 
 ## 2.2.3 Ensure Avahi Server is not enabled (Scored)
 ## 2.2.4 Ensure CUPS is not enabled (Scored)
@@ -26,30 +39,25 @@
 ## 2.2.14 Ensure SNMP Server is not enabled (Scored)
 
 - include: disable_upstart_service.yml
-  with_items:
-    - { name: avahi-daemon,     script: /etc/init/avahi-daemon.conf }
-    - { name: cups,             script: /etc/init/cups.conf }
-    - { name: rpcbind,          script: /etc/init/rpcbind.conf }
-    - { name: isc-dhcp-server,  script: /etc/init/isc-dhcp-server.conf }
-    - { name: isc-dhcp-server6, script: /etc/init/isc-dhcp-server6.conf }
-    - { name: vsftpd,           script: /etc/init/vsftpd.conf }
-    - { name: dovecot,          script: /etc/init/dovecot.conf }
-    - { name: smbd,             script: /etc/init/smbd.conf }
-    - { name: squid3,           script: /etc/init/squid3.conf }
+  with_items: "{{ os_hardening_upstart_services }}"
+  loop_control:
+    loop_var: svc_item
 
 - include: disable_sysv_service.yml
-  with_items:
-    - { name: slapd }
-    - { name: nfs-kernel-server }
-    - { name: bind9 }
-    - { name: apache2 }
-    - { name: snmpd }
+  with_items: "{{ os_hardening_sysv_services }}"
+  loop_control:
+    loop_var: svc_item
+
 
 ## 2.2.15 Ensure mail transfer agent is configured for local-only mode (Scored)
 - name: Check if postfix config file exists
   stat:
     path: "/etc/postfix/main.cf"
   register: postfix
+  when: "'2.2.15' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 2.2.15
 
 - name: Update postfix inet_interfaces property in config file
   lineinfile:
@@ -57,32 +65,49 @@
     regexp: '^inet_interfaces ='
     line: 'inet_interfaces = localhost'
   register: postfix_conf_update
-  when: postfix.stat.exists
+  when: "'2.2.15' not in os_hardening_exclusions and postfix.stat.exists"
+  tags:
+    - scored
+    - 2.2.15
 
 - name: Restart postfix service
   service:
     name: postfix
     state: restarted
-  when: postfix_conf_update|success
+  when: "'2.2.15' not in os_hardening_exclusions and postfix_conf_update|success"
+  tags:
+    - scored
+    - 2.2.15
 
 ## 2.2.16 Ensure rsync service is not enabled (Scored)
 - name: Check if rsync default config file exists
   stat:
     path: "/etc/default/rsync"
   register: rsync
+  when: "'2.2.16' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 2.2.16
 
 - name: Disable rsync service
   lineinfile:
     path:   "/etc/default/rsync"
     regexp: '^RSYNC_ENABLE='
     line:   'RSYNC_ENABLE=false'
-  when: rsync.stat.exists
+  when: "'2.2.16' not in os_hardening_exclusions and rsync.stat.exists"
+  tags:
+    - scored
+    - 2.2.16
 
 ## 2.2.17 Ensure NIS Server is not enabled (Scored)
 - name: Check if NIS server (ypserv) exists
   stat:
     path: "/etc/init/ypserv.conf"
   register: ypserv
+  when: "'2.2.17' not in os_hardening_exclusions"
+  tags:
+    - scored
+    - 2.2.17
 
 - name: Comment out "start" line in /etc/init/ypserv.conf
   lineinfile:
@@ -94,4 +119,7 @@
     - 'start on (.*)'
     - '\s+or(.*)'
     - '\s+and(.*)'
-  when: ypserv.stat.exists
+  when: "'2.2.17' not in os_hardening_exclusions and ypserv.stat.exists"
+  tags:
+    - scored
+    - 2.2.17
