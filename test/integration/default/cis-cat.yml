@@ -1,0 +1,65 @@
+---
+- name: CIS Configuration Assessment Tool
+  hosts: test-kitchen
+  become: yes
+
+  vars:
+    cis_cat_work_dir: /var/tmp/cis
+    cis_cat_results_dir: "{{ cis_cat_work_dir }}/results"
+    cis_cat_bundle_archive: ciscat-full-bundle-2018-01-18-v3.0.45.zip
+    cis_cat_scripts_dir: "{{ cis_cat_work_dir }}/cis-cat-full"
+
+
+  tasks:
+    - name: START HERE
+      debug: msg='starting here'
+
+    - name: Install unzip
+      apt:
+        name: unzip
+        state: present
+
+    - name: Install openjdk-7-jre
+      apt:
+        name: openjdk-7-jdk
+        state: present
+
+    - name: Create cis-cat work dir
+      file:
+        path: "{{ cis_cat_work_dir }}"
+        state: directory
+
+    - name: Create cis-cat scan results dir
+      file:
+        path: "{{ cis_cat_results_dir }}"
+        state: directory
+
+    - name: Copy and Unarchive cis-cat-full archive
+      unarchive:
+        src:  /tmp/kitchen/roles/ansible-os-hardening/test/{{ cis_cat_bundle_archive }}
+        dest: "{{ cis_cat_work_dir }}/"
+        remote_src: yes
+
+    - name: Run cis-cat scan | level 1
+      shell: >
+          bash ./CIS-CAT.sh \
+              --benchmark benchmarks/CIS_Ubuntu_Linux_14.04_LTS_Benchmark_v2.0.0-xccdf.xml \
+              --profile xccdf_org.cisecurity.benchmarks_profile_Level_1_-_Server \
+              --results-dir {{ cis_cat_results_dir }}
+      args:
+        chdir: "{{ cis_cat_scripts_dir }}"
+      register: level_1
+
+    - debug: var=level_1
+
+    - name: Run cis-cat full scan | level 2
+      shell: >
+          bash ./CIS-CAT.sh \
+              --benchmark benchmarks/CIS_Ubuntu_Linux_14.04_LTS_Benchmark_v2.0.0-xccdf.xml \
+              --profile xccdf_org.cisecurity.benchmarks_profile_Level_2_-_Server \
+              --results-dir {{ cis_cat_results_dir }}
+      args:
+        chdir: "{{ cis_cat_scripts_dir }}"
+      register: level_2
+
+    - debug: var=level_2

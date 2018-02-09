@@ -93,4 +93,5 @@
     - ansible-os-hardening
 
 
-- include: roles/ansible-os-hardening/test/cis-benchmark.yml
+- include: roles/ansible-os-hardening/test/integration/default/cis-benchmark.yml
+- include: roles/ansible-os-hardening/test/integration/default/cis-cat.yml
