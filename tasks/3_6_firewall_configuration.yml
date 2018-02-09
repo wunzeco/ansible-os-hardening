@@ -4,22 +4,23 @@
   apt:
     name:  iptables
     state: present
+  when: "'3.6.1' not in os_hardening_exclusions"
+  tags: [ scored, '3.6.1' ]
 
-## 3.6.2 Ensure default deny firewall policy (Scored)
-# iptables -P INPUT DROP
-# iptables -P OUTPUT DROP
-# iptables -P FORWARD DROP
-## WARNING: Changing firewall settings while connected over network can result
-##          in being locked out of the system.
-##          Do NOT do it, you most CERTAINLY will be locked out !!!
-#- name: Configure default deny firewall policy
-#  iptables:
-#    chain: "{{ item }}"
-#    jump:  DROP
-#  with_items:
-#    - INPUT
-#    - FORWARD
-#    - OUTPUT
+# iptables -P INPUT ACCEPT
+# iptables -P OUTPUT ACCEPT
+# iptables -P FORWARD ACCEPT
+# Note: So that one isn't locked out by a default deny policy while making further
+#       iptables configuration.
+- name: Configure default allow firewall policy before further firewall changes
+  iptables:
+    chain: "{{ item }}"
+    jump:  ACCEPT
+  with_items:
+    - INPUT
+    - FORWARD
+    - OUTPUT
+
 
 ## 3.6.3 Ensure loopback traffic is configured (Scored)
 # iptables -A INPUT -i lo -j ACCEPT
@@ -31,18 +32,46 @@
     chain:  INPUT
     jump:   ACCEPT
     in_interface: lo
+  when: "'3.6.3' not in os_hardening_exclusions"
+  tags: [ scored, '3.6.3' ]
+
 - name: Accept loopback traffic on OUT interface
   iptables:
     action: append
     chain:  OUTPUT
     jump:   ACCEPT
-    in_interface: lo
+    out_interface: lo
+  when: "'3.6.3' not in os_hardening_exclusions"
+  tags: [ scored, '3.6.3' ]
+
 - name: Drop traffic from source 127.0.0.0/8
   iptables:
     action: append
     chain:  INPUT
     jump:   DROP
     source: "127.0.0.0/8"
+  when: "'3.6.3' not in os_hardening_exclusions"
+  tags: [ scored, '3.6.3' ]
+
+
+## Allow port 22 traffic (inbound and outbound)
+## This is useful to have especially for remote login/configuration
+- name: Accept inbound SSH connections
+  iptables:
+    action: append
+    chain:  INPUT
+    jump:   ACCEPT
+    destination_port: 22
+    protocol: tcp
+
+- name: Allow outbound SSH connections
+  iptables:
+    action: append
+    chain:  OUTPUT
+    jump:   ACCEPT
+    destination_port: 22
+    protocol: tcp
+
 
 ## 3.6.4 Ensure outbound and established connections are configured (Not Scored)
 # iptables -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED -j ACCEPT
@@ -59,6 +88,9 @@
     ctstate: 'NEW,ESTABLISHED'
     protocol: "{{ item }}"
   with_items: [ tcp, udp, icmp ]
+  when: "'3.6.4' not in os_hardening_exclusions"
+  tags: [ scored, '3.6.4' ]
+
 - name: Allow inbound established connections
   iptables:
     action: append
@@ -67,9 +99,31 @@
     ctstate: 'ESTABLISHED'
     protocol: "{{ item }}"
   with_items: [ tcp, udp, icmp ]
+  when: "'3.6.4' not in os_hardening_exclusions"
+  tags: [ scored, '3.6.4' ]
+
 
 ## 3.6.5 Ensure firewall rules exist for all open ports (Scored)
 ## iptables -A INPUT -p <protocol> --dport <port> -m state --state NEW -j ACCEPT
 ## Hmmm... I wonder if this implies keeping an inventory of listening ports per
 ## host within a datacenter so as to add a rule for each one.
 ## How is this practical to manage? Seems like a unnecessary overhead
+
+
+## 3.6.2 Ensure default deny firewall policy (Scored)
+# iptables -P INPUT DROP
+# iptables -P OUTPUT DROP
+# iptables -P FORWARD DROP
+# WARNING: Changing firewall settings while connected over network can result
+#          in being locked out of the system.
+#          Do NOT do it, you most CERTAINLY will be locked out !!!
+- name: Configure default deny firewall policy
+  iptables:
+    chain: "{{ item }}"
+    jump:  DROP
+  with_items:
+    - INPUT
+    - FORWARD
+    - OUTPUT
+  when: "'3.6.2' not in os_hardening_exclusions"
+  tags: [ scored, '3.6.2' ]

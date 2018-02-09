@@ -2,9 +2,10 @@
 
 ## Auditd Configuration taken care of in role specified under "dependencies" in meta/main.yml
 ## 4.1.1.1 Ensure audit log storage size is configured (Not Scored)
-## 4.1.1.2 Ensure system is disabled when audit logs are full (Scored) 
+## 4.1.1.2 Ensure system is disabled when audit logs are full (Scored)
 ## 4.1.1.3 Ensure audit logs are not automatically deleted (Scored)
 ## 4.1.2 Ensure auditd service is enabled (Scored)
+
 ## 4.1.3 Ensure auditing for processes that start prior to auditd is enabled (Scored)
 - name: Check for audit=1 in GRUB_CMDLINE_LINUX
   shell: grep -e 'GRUB_CMDLINE_LINUX=.*audit=1.*' /etc/default/grub
@@ -19,6 +20,11 @@
     line: 'GRUB_CMDLINE_LINUX="\1 audit=1"'
     backrefs: yes
   when: audit.rc != 0
+  register: grub
+
+- name: Update grub2 configuration with audit=1
+  command: update-grub
+  when: grub|changed
 
 ## 4.1.4 - 4.1.18 | Audit Rules
 ## 4.1.4 Ensure events that modify date and time information are collected (Scored)

@@ -7,25 +7,30 @@
     owner: 'root'
     group: 'root'
     mode:  0600
+  when: "'5.1.2' not in os_hardening_exclusions"
+  tags: [ scored, '5.1.2' ]
 
 # 5.1.3 Ensure permissions on /etc/cron.hourly are configured (Scored)
 # 5.1.4 Ensure permissions on /etc/cron.daily are configured (Scored)
 # 5.1.5 Ensure permissions on /etc/cron.weekly are configured (Scored)
 # 5.1.6 Ensure permissions on /etc/cron.monthly are configured (Scored)
 # 5.1.7 Ensure permissions on /etc/cron.d are configured (Scored)
-#- name: Ensure ownership and permission of cron job directories is correct
-#  file:
-#    path:  "{{ item }}"
-#    owner: 'root'
-#    group: 'root'
-#    mode:  0600
-#    state: directory
-#  with_items: 
-#    - /etc/cron.hourly
-#    - /etc/cron.daily
-#    - /etc/cron.weekly
-#    - /etc/cron.monthly
-#    - /etc/cron.d
+- name: Ensure ownership and permission of cron job directories is correct
+  file:
+    path:  "{{ item.name }}"
+    owner: 'root'
+    group: 'root'
+    mode:  0600
+    state: directory
+  with_items: "{{ os_hardening_cron_dirs }}"
+  when: item.cis_id not in os_hardening_exclusions
+  tags:
+    - scored
+    - 5.1.3
+    - 5.1.4
+    - 5.1.5
+    - 5.1.6
+    - 5.1.7
 
 # 5.1.8 Ensure at/cron is restricted to authorized users (Scored)
 - name: Ensure at/cron is restricted to authorized users
@@ -35,6 +40,8 @@
     group: 'root'
     mode:  0600
     state: touch
-  with_items: 
+  with_items:
     - /etc/at.allow
     - /etc/cron.allow
+  when: "'5.1.8' not in os_hardening_exclusions"
+  tags: [ scored, '5.1.8' ]
