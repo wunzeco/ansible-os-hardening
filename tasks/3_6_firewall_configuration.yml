@@ -15,7 +15,7 @@
 - name: Configure default allow firewall policy before further firewall changes
   iptables:
     chain: "{{ item }}"
-    jump:  ACCEPT
+    policy:  ACCEPT
   with_items:
     - INPUT
     - FORWARD
@@ -120,7 +120,7 @@
 - name: Configure default deny firewall policy
   iptables:
     chain: "{{ item }}"
-    jump:  DROP
+    policy:  DROP
   with_items:
     - INPUT
     - FORWARD

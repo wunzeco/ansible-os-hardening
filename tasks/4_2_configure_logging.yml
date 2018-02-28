@@ -11,8 +11,14 @@
 # 4.2.2.4 Ensure syslog-ng is configured to send logs to a remote log host (Scored)
 # 4.2.2.5 Ensure remote syslog-ng messages are only accepted on designated log hosts (Not Scored)
 # 4.2.3 Ensure rsyslog or syslog-ng is installed (Scored)
-# 4.2.4 Ensure permissions on all logfiles are configured (Scored)
 
 # Logging configuration is very site specific. While for local logging rsyslog is normally
 # the default utility, other tools have sprung to prominence for remote logging.
 # So skipping!
+
+# 4.2.4 Ensure permissions on all logfiles are configured (Scored)
+- name: Ensure permissions on all logfiles
+  shell: chmod -R g-wx,o-rwx /var/log/*
+  when: "'4.2.4' not in os_hardening_exclusions"
+  tags: [ scored, '4.2.4' ]
+

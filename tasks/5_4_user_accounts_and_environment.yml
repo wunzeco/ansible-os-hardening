@@ -10,6 +10,19 @@
   when: "'5.4.1.1' not in os_hardening_exclusions"
   tags: [ scored, '5.4.1.1' ]
 
+- name: Get users with password expiry greater than 90 days
+  shell: awk -F":" '($2 != "!" && $2 != "*" && $5 > 90) {print $1}' /etc/shadow
+  register: users_maxdays
+  changed_when: False
+  when: "'5.4.1.1' not in os_hardening_exclusions"
+  tags: [ scored, '5.4.1.1' ]
+
+- name: Update password maxdays parameter of users with password expiry greater than 90 days
+  shell: chage --maxdays 90 {{ item }}
+  with_items: "{{ users_maxdays.stdout_lines }}"
+  when: "'5.4.1.1' not in os_hardening_exclusions"
+  tags: [ scored, '5.4.1.1' ]
+
 # 5.4.1.2 Ensure minimum days between password changes is 7 or more (Scored)
 - name: Ensure minimum days between password changes is 7 or more
   lineinfile:
@@ -17,6 +30,19 @@
     regexp: '^(PASS_MIN_DAYS).*'
     line:   '\1   7'
     backrefs: yes
+  when: "'5.4.1.2' not in os_hardening_exclusions"
+  tags: [ scored, '5.4.1.2' ]
+
+- name: Get users with minimum password change age less than 7 days
+  shell: awk -F":" '($2 != "!" && $2 != "*" && $4 < 7) {print $1}' /etc/shadow
+  register: users_mindays
+  changed_when: False
+  when: "'5.4.1.2' not in os_hardening_exclusions"
+  tags: [ scored, '5.4.1.2' ]
+
+- name: Update password mindays parameter of users with password change mindays less than 7 days
+  shell: chage --mindays 7 {{ item }}
+  with_items: "{{ users_mindays.stdout_lines }}"
   when: "'5.4.1.2' not in os_hardening_exclusions"
   tags: [ scored, '5.4.1.2' ]
 

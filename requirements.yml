@@ -1,10 +1,2 @@
 - src: wunzeco.ntp
-
-# PR raised to update how auditd.conf.j2 gets rendered. In the meantime, I'll use
-# alternative source
-#- src: fatal-exception.auditd
-- src: https://github.com/wunzeco/ansible-auditd.git
-  version: master
-  scm: git
-  name: fatal-exception.auditd
-
+- src: fatal-exception.auditd

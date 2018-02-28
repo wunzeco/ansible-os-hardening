@@ -89,15 +89,34 @@
       - '-a always,exit arch=b64 -S init_module -S delete_module -k modules'
 
 
+  pre_tasks:
+    - name: Get location of of all previleged commands to be added to auditd for monitoring
+      shell: >
+          find / -xdev \( -perm -4000 -o -perm -2000 \) -type f | \
+              awk '{print "-a always,exit -F path=" $1 " -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged" }'
+      register: priv_cmds_auditd_rules
+
+    - name: Merge auditd privilege command rules with auditd_base_rules
+      set_fact:
+        auditd_base_rules: "{{ auditd_base_rules|union(priv_cmds_auditd_rules.stdout_lines)|unique }}"
+
+    # This task is relevant because of CIS item 5.4.1.1 which updates maxdays parameter
+    # of vagrant user password to 90. A side effect of that change is that vagrant user
+    # is forced to change password at next login since the "lastday" param of vagrant
+    # user password is 17010 (which corresponds to 28-7-2016), which implies as of
+    # 27-02-2018 that the password is more than 90 days old.
+    #
+    # root@default-ubuntu-1404:~# cat /etc/shadow | grep vagrant
+    # vagrant:$6$IQ.vbPan$8m2xDNqN19iTMGKyZ7jAG/q/Falye0BN7WYMqMQ7PGaYiwJAHJl21dYGJe2lcUmg3dhCdU8qujYBRQN7jcgrw/:17010:0:90:7:::
+    #
+    - name: Update last password change day for vagrant user
+      shell: chage --lastday {{ ansible_date_time.date }} vagrant
+
+
   roles:
     - ansible-os-hardening
 
 
 - include: roles/ansible-os-hardening/test/integration/default/cis-benchmark.yml
 
-# Note:
-# Unfortunately CIS-CAT bundle archive is too big (60M) to be committed to Github.
-# This implies that the CIS-CAT bundle archive has to be sourced separately and saved
-# directly under the test directory of this role before uncommenting the line below
-# to include cis-cat.yml playbook
-#- include: roles/ansible-os-hardening/test/integration/default/cis-cat.yml
+- include: roles/ansible-os-hardening/test/integration/default/cis-cat.yml
