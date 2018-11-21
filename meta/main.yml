@@ -3,14 +3,14 @@ galaxy_info:
   author: "Ogonna Iwunze"
   company: none
   license: MIT
-  min_ansible_version: 2.2
+  min_ansible_version: 2.5
   platforms:
     - name: Ubuntu
       versions:
-        - trusty
+        - xenial
   categories:
     - cis
     - os-hardening
-dependencies: 
+dependencies:
   - { role: wunzeco.ntp }
   - { role: fatal-exception.auditd }
